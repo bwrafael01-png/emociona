@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pistas de Carrinhos - Oferta Imperdível!</title>
 <style>
-    body {font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; overflow-x:hidden;}
+    body {font-family: Arial, sans-serif; margin:0; padding:0; background:#ffa500; color:#333; overflow-x:hidden;}
     header {background:#ff4d4d; color:#fff; padding:50px 20px; text-align:center; position:relative;}
     header h1 {margin:0; font-size:2.8em; animation:fadeInDown 1s ease-in;}
     header p {margin:10px 0 0; font-size:1.3em; animation:fadeInDown 1.2s ease-in;}
     .container {max-width:900px; margin:40px auto; padding:0 20px;}
-    .highlight {color:#ff4d4d; font-weight:bold;}
     .cta-button {display:block; background:#ff4d4d; color:#fff; text-align:center; padding:20px; font-size:1.6em; text-decoration:none; border-radius:10px; margin:30px auto; width:80%; max-width:400px; transition:0.3s; animation:pulse 2s infinite;}
     .cta-button:hover {background:#e60000;}
     .scarcity, .opportunity {padding:15px; margin:20px 0; font-weight:bold; border-left:5px solid;}
@@ -27,9 +26,36 @@
     .car {position:absolute; width:50px; height:30px; background:#ff4d4d; border-radius:5px; top:10px; left:0; animation:drive 3s infinite linear;}
     footer {text-align:center; padding:20px; font-size:0.9em; color:#777; margin-top:40px;}
 
+    /* Notificação estilo WhatsApp */
+    .notification {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: #25D366;
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        font-size: 0.95em;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        display: none;
+        animation: fadeInUp 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+        z-index: 9999;
+    }
+
+    .notification img {
+        width: 20px;
+        height: 20px;
+    }
+
     @keyframes fadeInDown {from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);}}
     @keyframes pulse {0%,100% {transform:scale(1);} 50% {transform:scale(1.05);}}
     @keyframes drive {0% {left:0;} 50% {left:calc(100% - 50px);} 100% {left:0;}}
+    @keyframes fadeInUp {from {opacity:0; transform:translateY(30px);} to {opacity:1; transform:translateY(0);}}
+    @keyframes fadeOut {to {opacity:0; transform:translateY(30px);}}
 </style>
 </head>
 <body>
@@ -43,7 +69,7 @@
     <div class="scarcity">🚨 Últimas unidades disponíveis!</div>
     <div class="opportunity">💥 Promoção por tempo limitado!</div>
 
-    <div class="countdown" id="countdown">Oferta termina em: 24h 00m 00s</div>
+    <div class="countdown" id="countdown">Oferta termina em: 08m 00s</div>
 
     <div class="stock-bar-container">
         <div class="stock-bar" id="stockBar"></div>
@@ -80,38 +106,71 @@
     © 2025 Mundo Criado. Todos os direitos reservados.
 </footer>
 
+<!-- Notificação estilo WhatsApp -->
+<div class="notification" id="notification">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+    <span id="notificationText"></span>
+</div>
+
 <script>
-// Contador regressivo de 24h
+// Contador regressivo de 8 minutos
 function startCountdown() {
     const countdownElement = document.getElementById('countdown');
-    let endTime = new Date().getTime() + 24*60*60*1000;
-    setInterval(() => {
+    let endTime = new Date().getTime() + 8*60*1000; // 8 minutos
+    const timer = setInterval(() => {
         let now = new Date().getTime();
         let distance = endTime - now;
         if(distance < 0) {
+            clearInterval(timer);
             countdownElement.innerHTML = "Oferta encerrada!";
             return;
         }
-        let hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
         let minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
         let seconds = Math.floor((distance % (1000*60)) / 1000);
-        countdownElement.innerHTML = Oferta termina em: ${hours}h ${minutes}m ${seconds}s;
+        countdownElement.innerHTML = `Oferta termina em: ${minutes}m ${seconds}s`;
     }, 1000);
 }
 startCountdown();
 
-// Simulação de estoque diminuindo
+// Simulação de estoque diminuindo + notificações
 let stock = 20;
 const stockBar = document.getElementById('stockBar');
 const stockText = document.getElementById('stockText');
+const notification = document.getElementById('notification');
+const notificationText = document.getElementById('notificationText');
+
+const nomes = ["Alfredo", "Mariana", "João Paulo", "Renata Silva", "Carlos Eduardo", "Beatriz Souza", "Fernando Lima", "Tatiane Rocha"];
+const cidades = [
+    "São Paulo/SP", "Rio de Janeiro/RJ", "Belo Horizonte/MG",
+    "Curitiba/PR", "Porto Alegre/RS", "Salvador/BA",
+    "Recife/PE", "Fortaleza/CE", "Brasília/DF",
+    "Manaus/AM", "Belém/PA", "Florianópolis/SC"
+];
+
+function mostrarNotificacao(nome, cidade) {
+    notificationText.innerText = `${nome} de ${cidade} acabou de comprar uma unidade 🚗🔥`;
+    notification.style.display = "flex";
+
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 5000);
+}
+
 setInterval(() => {
     if(stock > 0) {
         stock--;
         let percent = (stock/20)*100;
         stockBar.style.width = percent + '%';
-        stockText.innerText = Estoque restante: ${stock} unidades;
+        stockText.innerText = `Estoque restante: ${stock} unidades`;
+
+        // Notificação de compra simulada
+        const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
+        const cidadeAleatoria = cidades[Math.floor(Math.random() * cidades.length)];
+        mostrarNotificacao(nomeAleatorio, cidadeAleatoria);
+    } else {
+        stockText.innerText = "Produto esgotado!";
     }
-}, 10000); // diminui 1 unidade a cada 10s
+}, 5000); // diminui 1 unidade a cada 5s
 </script>
 
 </body>
