@@ -88,7 +88,7 @@
 
     <!-- Vídeo -->
     <div id="videoContainer" style="text-align:center; margin-bottom:20px;">
-        <iframe id="promoVideo" width="100%" height="400" src="https://www.youtube.com/embed/foyj4Fif31Y?enablejsapi=1" title="Promoção Pista Hot Wheels" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe id="promoVideo" width="100%" height="400" src="https://www.youtube.com/embed/foyj4Fif31Y?enablejsapi=1&rel=0" title="Promoção Pista Hot Wheels" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
     <!-- Botão aparece após vídeo -->
@@ -164,7 +164,7 @@ function startCountdown() {
 }
 startCountdown();
 
-// Simulação de estoque diminuindo + notificações
+// Estoque e notificações
 let stock = 20;
 const stockBar = document.getElementById('stockBar');
 const stockText = document.getElementById('stockText');
@@ -172,36 +172,29 @@ const notification = document.getElementById('notification');
 const notificationText = document.getElementById('notificationText');
 
 const nomes = ["Alfredo", "Mariana", "João Paulo", "Renata Silva", "Carlos Eduardo", "Beatriz Souza", "Fernando Lima", "Tatiane Rocha"];
-const cidades = [
-    "São Paulo/SP", "Rio de Janeiro/RJ", "Belo Horizonte/MG",
-    "Curitiba/PR", "Porto Alegre/RS", "Salvador/BA",
-    "Recife/PE", "Fortaleza/CE", "Brasília/DF",
-    "Manaus/AM", "Belém/PA", "Florianópolis/SC"
-];
+const cidades = ["São Paulo/SP","Rio de Janeiro/RJ","Belo Horizonte/MG","Curitiba/PR","Porto Alegre/RS","Salvador/BA","Recife/PE","Fortaleza/CE","Brasília/DF","Manaus/AM","Belém/PA","Florianópolis/SC"];
 
 function mostrarNotificacao(nome, cidade) {
     notificationText.innerText = `${nome} de ${cidade} acabou de comprar uma unidade 🚗🔥`;
     notification.style.display = "flex";
-
-    setTimeout(() => {
-        notification.style.display = "none";
-    }, 5000);
+    setTimeout(() => { notification.style.display = "none"; }, 5000);
 }
 
+// Diminuir estoque a cada 3 minutos
 setInterval(() => {
-    if(stock > 0) {
+    if(stock > 0){
         stock--;
         let percent = (stock/20)*100;
         stockBar.style.width = percent + '%';
         stockText.innerText = `Estoque restante: ${stock} unidades`;
 
-        const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
-        const cidadeAleatoria = cidades[Math.floor(Math.random() * cidades.length)];
+        const nomeAleatorio = nomes[Math.floor(Math.random()*nomes.length)];
+        const cidadeAleatoria = cidades[Math.floor(Math.random()*cidades.length)];
         mostrarNotificacao(nomeAleatorio, cidadeAleatoria);
     } else {
         stockText.innerText = "Produto esgotado!";
     }
-}, 60000); // 1 unidade a cada minuto
+}, 180000); // 3 minutos em ms
 </script>
 
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -212,9 +205,8 @@ setInterval(() => {
       events: { 'onStateChange': onPlayerStateChange }
     });
   }
-
   function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
+    if(event.data === YT.PlayerState.ENDED){
       document.getElementById('videoContainer').style.display = "none";
       document.getElementById('buyButtonContainer').style.display = "block";
       document.getElementById('fixedBuyButton').style.display = "block";
